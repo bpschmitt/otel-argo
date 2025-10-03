@@ -5,7 +5,7 @@
 # -- Name of the Kubernetes cluster monitored. Mandatory. Can be configured also with `global.cluster`
 cluster: "otel-sandbox"
 # -- This set this license key to use. Can be configured also with `global.licenseKey`
-licenseKey: ""
+# licenseKey: ""
 
 kube-state-metrics:
   # kube-state-metrics.enabled -- Install the [`kube-state-metrics` chart](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-state-metrics) from the stable helm charts repository.
