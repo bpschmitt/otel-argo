@@ -44,7 +44,8 @@ spec:
     spec:
       project: default
       source:
-        repoURL: 'git@github.com:bpschmitt/otel-argo.git' # <<< CHANGE THIS TO YOUR REPO URL
+        repoURL: https://github.com/bpschmitt/otel-argo.git
+        #repoURL: 'git@github.com:bpschmitt/otel-argo.git' # <<< CHANGE THIS TO YOUR REPO URL
         targetRevision: HEAD
         # Use the 'path' from the generator list (e.g., components/otel-operator)
         path: '{{path}}'
@@ -63,6 +64,7 @@ spec:
           # The application itself must be annotated with the sync-wave value
           - ServerSideApply=true # Good practice for managing large manifests
           - RespectIgnoreDifferences=true
+          - CreateNamespace=true
 
         # Here we apply the synchronization wave annotation taken from the generator list.
         # ArgoCD will use this annotation to determine the order of deployment execution.
