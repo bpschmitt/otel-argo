@@ -1,23 +1,15 @@
-# This Kustomization file defines the base configuration for the OpenTelemetry Operator.
-# It uses the Helm chart generator plugin (or Kustomize's native Helm support)
-# to produce the base Kubernetes manifests.
+# Kustomize Base for OpenTelemetry Operator.
+# This file is pure Kustomize and relies on pre-rendered YAML manifests.
 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# The Helm chart source is defined here. In an actual ArgoCD setup, the 'source'
-# field in the ApplicationSet dictates the repository, and Kustomize is configured
-# to consume Helm locally or via an upstream reference.
-# For simplicity, we assume the Helm chart is defined/referenced within this repo:
-helmCharts:
-- name: otel-operator-chart # Name of the Helm chart in the 'charts' directory
-  repo: https://open-telemetry.github.io/opentelemetry-helm-charts
-  releaseName: otel-operator
-  namespace: opentelemetry
-  # Default common values for all environments
-  valuesInline:
-    manager:
-      replicaCount: 1
-    # Assuming the Helm chart installs the necessary CRDs
-    crds:
-      install: true
+# The base only includes the pre-rendered Helm output (manifests.yaml).
+resources:
+- manifests.yaml
+
+# Set common labels to be inherited by all resources in this base
+commonLabels:
+  app.kubernetes.io/name: otel-operator
+  app.kubernetes.io/part-of: opentelemetry
+  kustomize.component: otel-operator-base
