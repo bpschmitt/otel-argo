@@ -16,11 +16,11 @@ spec:
           syncWave: "-1"
           component: operator
         
-        # # 2. OpenTelemetry Agent (Wave 1: Depends on CRDs from Operator)
-        # - name: otel-agent
-        #   path: components/otel-agent
-        #   syncWave: "1"
-        #   component: agent
+        # 2. OpenTelemetry Agent (Wave 1: Depends on CRDs from Operator)
+        - name: otel-agent
+          path: components/otel-agent
+          syncWave: "1"
+          component: agent
 
         # # 3. OpenTelemetry Gateway (Wave 1: Deploys concurrently with Agent)
         # - name: otel-gateway
