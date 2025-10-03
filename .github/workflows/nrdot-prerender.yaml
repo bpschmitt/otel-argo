@@ -1,7 +1,7 @@
 # Workflow to automatically render Helm charts into static Kubernetes YAML manifests
 # and commit them to the respective Kustomize base directories.
 
-name: Helm Manifest Pre-Renderer
+name: NRDOT Manifest Pre-Renderer
 
 on:
   # Run this workflow whenever files in the 'charts' directory are changed
