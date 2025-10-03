@@ -46,6 +46,7 @@ jobs:
           # We use the local directory where the chart was pulled in the previous step
           helm template nr-k8s-otel-collector \
             ./pulled_charts/nr-k8s-otel-collector \
+            -f components/otel-agent/values.yaml \
             --namespace newrelic \
             > components/otel-agent/manifests.yaml
           echo "Generated components/otel-agent/manifests.yaml"
