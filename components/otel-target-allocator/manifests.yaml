@@ -28,11 +28,6 @@ spec:
       secretKeyRef:
         name: newrelic-license-key-vz-app-team-b
         key: license
-  - name: NR_LICENSE_KEY_TEAM_C
-    valueFrom:
-      secretKeyRef:
-        name: newrelic-license-key-vz-app-team-c
-        key: license
   targetAllocator:
     enabled: true
     serviceAccount: targetallocator-sa
@@ -125,12 +120,6 @@ spec:
             action: "insert"
             value: "team-b"
             
-      resource/team-c:
-        attributes:
-          - key: "collector.source"
-            action: "insert"
-            value: "team-c"
-            
 
     connectors:
     
@@ -152,11 +141,6 @@ spec:
             pipelines:
               - metrics/team-b
             
-          - context: metric
-            condition: 'resource.attributes["k8s.namespace.name"] == "team-c"'
-            pipelines:
-              - metrics/team-c
-            
 
 
     exporters:
@@ -176,11 +160,6 @@ spec:
         endpoint: https://otlp.nr-data.net
         headers:
           api-key: ${NR_LICENSE_KEY_TEAM_B}
-            
-      otlphttp/team-c:
-        endpoint: https://otlp.nr-data.net
-        headers:
-          api-key: ${NR_LICENSE_KEY_TEAM_C}
             
 
     service:
@@ -210,14 +189,4 @@ spec:
         metrics/team-b:
           receivers: [routing/metrics]
           processors: [memory_limiter, resource, resource/team-b, k8sattributes, batch]
-          exporters: [debug]
-            
-        metrics/team-c:
-          receivers: [routing/metrics]
-          processors: [memory_limiter, resource, resource/team-c, k8sattributes, batch]
-          exporters: [debug]
-            
-        metrics/debug:
-          receivers: [routing/metrics]
-          processors: [memory_limiter, batch]
           exporters: [debug]
