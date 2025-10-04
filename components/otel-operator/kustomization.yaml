@@ -9,7 +9,7 @@ resources:
 - manifests.yaml
 
 # Set common labels to be inherited by all resources in this base
-commonLabels:
-  app.kubernetes.io/name: otel-operator
-  app.kubernetes.io/part-of: opentelemetry
-  kustomize.component: otel-operator-base
+# commonLabels:
+#   app.kubernetes.io/name: otel-operator
+#   app.kubernetes.io/part-of: opentelemetry
+#   kustomize.component: otel-operator-base
