@@ -1,6 +1,102 @@
 ---
 # Source: otel-operator-multitenant/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: targetallocator-sa
+  namespace: opentelemetry
+---
+# Source: otel-operator-multitenant/templates/serviceaccount.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: targetallocator-clusterrolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: targetallocator-clusterrole
+subjects:
+- kind: ServiceAccount
+  name: targetallocator-sa
+  namespace: opentelemetry
+---
+# Source: otel-operator-multitenant/templates/serviceaccount.yaml
+## apiVersion: v1
+# kind: ServiceAccount
+# metadata:
+#   name: otel-operator-multitenant
+#   labels:
 #
+    helm.sh/chart: otel-operator-multitenant-0.1.5
+    app.kubernetes.io/name: otel-operator-multitenant
+    app.kubernetes.io/instance: otel-operator-multitenant
+    app.kubernetes.io/managed-by: Helm
+#
+# automountServiceAccountToken: true
+#---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: targetallocator-clusterrole
+rules:
+  - apiGroups:
+    - "apps"
+    resources:
+    - deployments
+    - replicasets
+    - statefulsets
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ""
+    resources:
+    - configmaps
+    verbs:
+    - get
+  - apiGroups:
+    - ""
+    resources:
+    - pods
+    - pods/status
+    - services
+    - endpoints
+    - namespaces
+    - nodes
+    - nodes/metrics
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - monitoring.coreos.com
+    resources:
+    - probes
+    - scrapeconfigs
+    - podmonitors
+    - servicemonitors
+    verbs:
+    - "*"
+  - apiGroups:
+    - discovery.k8s.io
+    resources:
+    - endpointslices
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - networking.k8s.io
+    resources:
+    - ingresses
+    verbs:
+    - get
+    - list
+    - watch
+  # following required for prometheus receiver
+  - nonResourceURLs: ["/metrics", "/apis/*", "/apis", "/api/*", "/api"]
+    verbs: ["get"]
 ---
 # Source: otel-operator-multitenant/templates/ta-otelcollector.yaml
 apiVersion: opentelemetry.io/v1beta1
