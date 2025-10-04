@@ -8,7 +8,7 @@ on:
   push:
     branches:
       - main
-    # paths:
+    paths:
       # - 'charts/**'
       - 'components/otel-operator/values.yaml' # If values are managed separately
   # Also allow manual triggering
