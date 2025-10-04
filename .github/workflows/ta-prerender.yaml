@@ -46,6 +46,7 @@ jobs:
           # We use the local directory where the chart was pulled in the previous step
           helm template otel-operator-multitenant \
             ./pulled_charts/otel-operator-multitenant \
+            -f components/otel-target-allocator/values.yaml \
             --namespace opentelemetry \
             > components/otel-target-allocator/manifests.yaml
           echo "Generated components/otel-target-allocator/manifests.yaml"
