@@ -10,7 +10,7 @@ on:
       - main
     # paths:
       # - 'charts/**'
-      # - 'components/**/values.yaml' # If values are managed separately
+      - 'components/otel-operator/values.yaml' # If values are managed separately
   # Also allow manual triggering
   workflow_dispatch:
 
