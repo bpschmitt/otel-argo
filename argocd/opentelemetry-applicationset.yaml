@@ -22,17 +22,11 @@ spec:
           syncWave: "1"
           component: agent
 
-        # # 3. OpenTelemetry Gateway (Wave 1: Deploys concurrently with Agent)
-        # - name: otel-gateway
-        #   path: components/otel-gateway
-        #   syncWave: "1"
-        #   component: gateway
-
-        # # 4. OpenTelemetry Target Allocator (Wave 2: Deploys last, depends on Gateway/Agent setup)
-        # - name: otel-target-allocator
-        #   path: components/otel-target-allocator
-        #   syncWave: "2"
-        #   component: target-allocator
+        # 3. OpenTelemetry Target Allocator (Wave 2: Deploys last, depends on Gateway/Agent setup)
+        - name: otel-target-allocator
+          path: components/otel-target-allocator
+          syncWave: "2"
+          component: target-allocator
 
   # The template defines how each element from the generator list is transformed into an ArgoCD Application.
   template:
