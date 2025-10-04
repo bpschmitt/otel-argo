@@ -1,0 +1,90 @@
+# Workflow to automatically render Helm charts into static Kubernetes YAML manifests
+# and commit them to the respective Kustomize base directories.
+
+name: TA Manifest Pre-Renderer
+
+on:
+  # Run this workflow whenever files in the 'charts' directory are changed
+  push:
+    branches:
+      - main
+    paths:
+      # - 'charts/**'
+      - 'components/otel-target-allocator/values.yaml' # If values are managed separately
+  # Also allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  render_and_commit:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+
+      # --- Configure and Pull Remote OTEL Operator Chart ---
+      - name: Configure and Pull the multitenant chart
+        run: |
+          # 1. Add the official OpenTelemetry Helm repository
+          helm repo add bpschmitt https://bpschmitt.github.io/otel-operator-multitenant
+          helm repo update
+          
+          # 2. Pull the chart and untar it into a temporary local directory
+          helm pull bpschmitt/otel-operator-multitenant --untar --destination ./pulled_charts/
+          echo "Operator chart pulled to ./pulled_charts/otel-operator-multitenant"
+
+
+      # --- Step 1: Render OpenTelemetry Operator (Now referencing the pulled chart) ---
+      - name: Render TA Manifests
+        run: |
+          # We use the local directory where the chart was pulled in the previous step
+          helm template otel-operator-multitenant \
+            ./pulled_charts/otel-operator-multitenant \
+            --namespace opentelemetry \
+            > components/otel-target-allocator/manifests.yaml
+          echo "Generated components/otel-target-allocator/manifests.yaml"
+
+      # # --- Step 2: Render OpenTelemetry Agent ---
+      # - name: Render OTEL Agent Manifests
+      #   # Note: We assume the chart path is correct based on the Kustomize base structure
+      #   run: |
+      #     helm template otel-agent \
+      #       ./charts/otel-agent-chart \
+      #       --namespace opentelemetry \
+      #       > components/otel-agent/manifests.yaml
+      #     echo "Generated components/otel-agent/manifests.yaml"
+      
+      # # --- Step 3: Render OpenTelemetry Gateway ---
+      # - name: Render OTEL Gateway Manifests
+      #   run: |
+      #     helm template otel-gateway \
+      #       ./charts/otel-gateway-chart \
+      #       --namespace opentelemetry \
+      #       > components/otel-gateway/manifests.yaml
+      #     echo "Generated components/otel-gateway/manifests.yaml"
+
+      # # --- Step 4: Render OpenTelemetry Target Allocator ---
+      # - name: Render OTEL Target Allocator Manifests
+      #   run: |
+      #     helm template otel-target-allocator \
+      #       ./charts/otel-target-allocator-chart \
+      #       --namespace opentelemetry \
+      #       > components/otel-target-allocator/manifests.yaml
+      #     echo "Generated components/otel-target-allocator/manifests.yaml"
+
+      # --- Step 5: Commit the generated manifests back to the repo ---
+      - name: Commit generated Kustomize bases
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          # Only commit if there are actual changes (i.e., the helm template output changed)
+          commit_message: "🤖 GitOps: Auto-rendered Helm manifests for OpenTelemetry stack"
+          # Files to check for changes
+          file_pattern: 'components/**/manifests.yaml'
+          # Use the default GitHub token for authenticated push
+          commit_options: '--no-verify --allow-empty'
