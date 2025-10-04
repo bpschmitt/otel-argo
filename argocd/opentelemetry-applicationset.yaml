@@ -13,19 +13,16 @@ spec:
         # 1. OpenTelemetry Operator (Wave -1: Deploys first to establish CRDs)
         - name: otel-operator
           path: components/otel-operator
-          syncWave: "-1"
           component: operator
         
         # 2. OpenTelemetry Agent (Wave 1: Depends on CRDs from Operator)
         - name: otel-agent
           path: components/otel-agent
-          syncWave: "1"
           component: agent
 
         # 3. OpenTelemetry Target Allocator (Wave 2: Deploys last, depends on Gateway/Agent setup)
         - name: otel-target-allocator
           path: components/otel-target-allocator
-          syncWave: "2"
           component: target-allocator
 
   # The template defines how each element from the generator list is transformed into an ArgoCD Application.
