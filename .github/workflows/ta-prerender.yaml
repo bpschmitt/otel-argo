@@ -36,7 +36,7 @@ jobs:
           helm repo update
           
           # 2. Pull the chart and untar it into a temporary local directory
-          helm pull bpschmitt/otel-operator-multitenant --untar --destination ./pulled_charts/
+          helm pull bpschmitt/opentelemetry-targetallocator-generator --untar --destination ./pulled_charts/
           echo "Operator chart pulled to ./pulled_charts/opentelemetry-targetallocator-generator"
 
 
