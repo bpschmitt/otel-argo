@@ -32,20 +32,20 @@ jobs:
       - name: Configure and Pull the multitenant chart
         run: |
           # 1. Add the official OpenTelemetry Helm repository
-          helm repo add bpschmitt https://bpschmitt.github.io/otel-operator-multitenant
+          helm repo add bpschmitt https://bpschmitt.github.io/opentelemetry-targetallocator-generator
           helm repo update
           
           # 2. Pull the chart and untar it into a temporary local directory
           helm pull bpschmitt/otel-operator-multitenant --untar --destination ./pulled_charts/
-          echo "Operator chart pulled to ./pulled_charts/otel-operator-multitenant"
+          echo "Operator chart pulled to ./pulled_charts/opentelemetry-targetallocator-generator"
 
 
       # --- Step 1: Render OpenTelemetry Operator (Now referencing the pulled chart) ---
       - name: Render TA Manifests
         run: |
           # We use the local directory where the chart was pulled in the previous step
-          helm template otel-operator-multitenant \
-            ./pulled_charts/otel-operator-multitenant \
+          helm template ta-multitenant \
+            ./pulled_charts/opentelemetry-targetallocator-generator \
             -f components/otel-target-allocator/values.yaml \
             --namespace opentelemetry \
             > components/otel-target-allocator/manifests.yaml
