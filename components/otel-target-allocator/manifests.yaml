@@ -1,20 +1,45 @@
 ---
-# Source: otel-operator-multitenant/templates/serviceaccount.yaml
+# Source: opentelemetry-targetallocator-generator/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: targetallocator-sa
+  name: opentelemetry-targetallocator-generator-sts-targetallocator
   namespace: opentelemetry
 ---
-# Source: otel-operator-multitenant/templates/serviceaccount.yaml
+# Source: opentelemetry-targetallocator-generator/templates/clusterrole.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: targetallocator-clusterrole
+  name: opentelemetry-targetallocator-generator-sts-targetallocator
 rules:
   - apiGroups:
-    - "apps"
+    - ""
     resources:
+    - events
+    - namespaces
+    - namespaces/status
+    - nodes
+    - nodes/spec
+    - nodes/stats
+    - nodes/proxy
+    - nodes/metrics
+    - pods
+    - pods/status
+    - replicationcontrollers
+    - replicationcontrollers/status
+    - resourcequotas
+    - services
+    - endpoints
+    - ingresses
+    - configmaps
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - apps
+    resources:
+    - daemonsets
     - deployments
     - replicasets
     - statefulsets
@@ -23,108 +48,129 @@ rules:
     - list
     - watch
   - apiGroups:
-    - ""
+    - extensions
     resources:
-    - configmaps
-    verbs:
-    - get
-  - apiGroups:
-    - ""
-    resources:
-    - pods
-    - pods/status
-    - services
-    - endpoints
-    - namespaces
-    - nodes
-    - nodes/metrics
+    - daemonsets
+    - deployments
+    - replicasets
     verbs:
     - get
     - list
     - watch
   - apiGroups:
-    - monitoring.coreos.com
+    - batch
     resources:
-    - probes
-    - scrapeconfigs
-    - podmonitors
-    - servicemonitors
-    verbs:
-    - "*"
-  - apiGroups:
-    - discovery.k8s.io
-    resources:
-    - endpointslices
+    - jobs
+    - cronjobs
     verbs:
     - get
     - list
     - watch
   - apiGroups:
-    - networking.k8s.io
+    - autoscaling
     resources:
-    - ingresses
+    - horizontalpodautoscalers
     verbs:
     - get
     - list
     - watch
-  # following required for prometheus receiver
-  - nonResourceURLs: ["/metrics", "/apis/*", "/apis", "/api/*", "/api"]
-    verbs: ["get"]
+  - nonResourceURLs:
+    - /metrics
+    - /metrics/cadvisor
+    verbs:
+    - get
 ---
-# Source: otel-operator-multitenant/templates/serviceaccount.yaml
+# Source: opentelemetry-targetallocator-generator/templates/clusterrolebinding.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: targetallocator-clusterrolebinding
+  name: opentelemetry-targetallocator-generator-sts-targetallocator
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: targetallocator-clusterrole
+  name: opentelemetry-targetallocator-generator-sts-targetallocator
 subjects:
 - kind: ServiceAccount
-  name: targetallocator-sa
+  name: opentelemetry-targetallocator-generator-sts-targetallocator
   namespace: opentelemetry
 ---
-# Source: otel-operator-multitenant/templates/ta-otelcollector.yaml
+# Source: opentelemetry-targetallocator-generator/templates/ta-otelcollector.yaml
 apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
 metadata:
-  name: collector-with-ta
+  name: opentelemetry-targetallocator-generator-sts-targetallocator
   namespace: opentelemetry
 spec:
   mode: statefulset
   replicas: 2
-  serviceAccount: targetallocator-sa
   env:
   - name: NR_LICENSE_KEY_PLATFORM
     valueFrom:
       secretKeyRef:
-        name: newrelic-license-key-vz-platform-team
+        name: newrelic-license-key-platform-team
         key: license
   - name: NR_LICENSE_KEY_TEAM_A
     valueFrom:
       secretKeyRef:
-        name: newrelic-license-key-vz-app-team-a
+        name: newrelic-license-key-app-team-a
         key: license
   - name: NR_LICENSE_KEY_TEAM_B
     valueFrom:
       secretKeyRef:
-        name: newrelic-license-key-vz-app-team-b
+        name: newrelic-license-key-app-team-b
         key: license
+  - name: NR_LICENSE_KEY_TEAM_C
+    valueFrom:
+      secretKeyRef:
+        name: newrelic-license-key-app-team-c
+        key: license
+  - name: NR_LICENSE_KEY_TEAM_D
+    valueFrom:
+      secretKeyRef:
+        name: newrelic-license-key-app-team-d
+        key: license
+
+  # Annotations for the pods
+  podAnnotations:
+    prometheus.io/scrape: "false" # This should be false by default. Otherwise 'otelcollector' self scraper job AND 'kubernetes-pods' scrape job will both scrape
+
   targetAllocator:
     enabled: true
-    serviceAccount: targetallocator-sa
+    serviceAccount: opentelemetry-targetallocator-generator-sts-targetallocator
     prometheusCR:
       enabled: true
       podMonitorSelector: {}
       serviceMonitorSelector: {}
+
+  # Security context for container priviliges
+
+  # Ports to expose per service
+  ports:
+    - name: prometheus
+      protocol: TCP
+      port: 8888
+      targetPort: 8888
+
+  # Image
+  image: "otel/opentelemetry-collector-contrib:0.137.0"
+  imagePullPolicy: IfNotPresent
+
+  # Resources
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 
+      memory: 512Mi
+
   config:
     receivers:
       prometheus:
         config:
           scrape_configs:
           - job_name: 'otel-collector'
-            scrape_interval: 10s
+            scrape_interval: 30s
             static_configs:
             - targets: [ '0.0.0.0:8888' ]
             metric_relabel_configs:
@@ -141,7 +187,6 @@ spec:
         limit_mib: 4000
         spike_limit_mib: 200
       batch: {}
-
       k8sattributes:
         auth_type: "serviceAccount"
         passthrough: false
@@ -179,7 +224,7 @@ spec:
           # - sources:
           #     # This rule will use the IP from the incoming connection from which the resource is received, and find the matching pod, based on the 'pod.status.podIP' of the observed pods
           #     - from: connection
-      
+
       resource:
         attributes:
           - action: upsert
@@ -190,22 +235,28 @@ spec:
           - key: "collector.source"
             action: "insert"
             value: "platform"
-            
       resource/team-a:
         attributes:
           - key: "collector.source"
             action: "insert"
             value: "team-a"
-            
       resource/team-b:
         attributes:
           - key: "collector.source"
             action: "insert"
             value: "team-b"
-            
+      resource/team-c:
+        attributes:
+          - key: "collector.source"
+            action: "insert"
+            value: "team-c"
+      resource/team-d:
+        attributes:
+          - key: "collector.source"
+            action: "insert"
+            value: "team-d"
 
     connectors:
-    
       routing/metrics:
         default_pipelines: [metrics/default]
         table:
@@ -213,63 +264,76 @@ spec:
             condition: 'resource.attributes["k8s.namespace.name"] == "platform"'
             pipelines:
               - metrics/platform
-            
           - context: metric
-            condition: 'resource.attributes["k8s.namespace.name"] == "team-a"'
+            condition: 'resource.attributes["k8s.namespace.name"] == "team-a"or resource.attributes["tenant.name"] == "team-a"'
             pipelines:
               - metrics/team-a
-            
           - context: metric
-            condition: 'resource.attributes["k8s.namespace.name"] == "team-b"'
+            condition: 'resource.attributes["k8s.namespace.name"] == "team-b"or resource.attributes["tenant.name"] == "team-b"'
             pipelines:
               - metrics/team-b
-            
+          - context: metric
+            condition: 'resource.attributes["k8s.namespace.name"] == "team-c"or resource.attributes["tenant.name"] == "team-c"'
+            pipelines:
+              - metrics/team-c
+          - context: metric
+            condition: 'resource.attributes["k8s.namespace.name"] == "team-d"or resource.attributes["tenant.name"] == "team-d"'
+            pipelines:
+              - metrics/team-d
 
 
     exporters:
-
       debug: {}
       otlphttp/platform:
         endpoint: https://otlp.nr-data.net
         headers:
           api-key: ${NR_LICENSE_KEY_PLATFORM}
-            
       otlphttp/team-a:
         endpoint: https://otlp.nr-data.net
         headers:
           api-key: ${NR_LICENSE_KEY_TEAM_A}
-            
       otlphttp/team-b:
         endpoint: https://otlp.nr-data.net
         headers:
           api-key: ${NR_LICENSE_KEY_TEAM_B}
-            
+      otlphttp/team-c:
+        endpoint: https://otlp.nr-data.net
+        headers:
+          api-key: ${NR_LICENSE_KEY_TEAM_C}
+      otlphttp/team-d:
+        endpoint: https://otlp.nr-data.net
+        headers:
+          api-key: ${NR_LICENSE_KEY_TEAM_D}
 
     service:
-      pipelines: 
+      pipelines:
         metrics/default:
           receivers: [routing/metrics]
           processors: [memory_limiter, resource, resource/platform, batch]
           # The routing connector acts as an exporter for the first pipeline...
           exporters: [debug]
-
         metrics/ingress:
           receivers: [prometheus]
           processors: [memory_limiter, batch]
           # The routing connector acts as an exporter for the first pipeline...
           exporters: [routing/metrics]
-            
         metrics/platform:
           receivers: [routing/metrics]
           processors: [memory_limiter, resource, resource/platform, k8sattributes, batch]
           exporters: [debug]
-            
         metrics/team-a:
           receivers: [routing/metrics]
           processors: [memory_limiter, resource, resource/team-a, k8sattributes, batch]
           exporters: [debug]
-            
         metrics/team-b:
           receivers: [routing/metrics]
           processors: [memory_limiter, resource, resource/team-b, k8sattributes, batch]
+          exporters: [debug]
+        metrics/team-c:
+          receivers: [routing/metrics]
+          processors: [memory_limiter, resource, resource/team-c, k8sattributes, batch]
+          exporters: [debug]
+        metrics/team-d:
+          receivers: [routing/metrics]
+          processors: [memory_limiter, resource, resource/team-d, k8sattributes, batch]
           exporters: [debug]
