@@ -47,22 +47,6 @@ global:
         identifier: team-b
         namespaces:
           - team-b
-      # team-c:
-      #   licenseKey:
-      #     secretRef:
-      #       name: newrelic-license-key-app-team-c
-      #       key: license
-      #   identifier: team-c
-      #   namespaces:
-      #     - team-c
-      # team-d:
-      #   licenseKey:
-      #     secretRef:
-      #       name: newrelic-license-key-app-team-d
-      #       key: license
-      #   identifier: team-d
-      #   namespaces:
-      #     - team-d
 
 targetAllocatorName: "otel-target-allocator-statefulset"
 
