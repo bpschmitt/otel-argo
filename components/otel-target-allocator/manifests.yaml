@@ -13,6 +13,45 @@ metadata:
   name: otel-target-allocator-statefulset
 rules:
   - apiGroups:
+    - monitoring.coreos.com
+    resources:
+    - alertmanagers
+    - prometheuses
+    - prometheuses/finalizers
+    - alertmanagers/finalizers
+    - servicemonitors
+    - podmonitors
+    - prometheusrules
+    - probes
+    - scrapeconfigs
+    verbs:
+    - '*'
+  - apiGroups:
+    - apps
+    resources:
+    - statefulsets
+    verbs:
+    - '*'
+  - apiGroups:
+    - ""
+    resources:
+    - namespaces
+    - nodes
+    - nodes/metrics
+    - services
+    - endpoints
+    - pods
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ""
+    resources:
+    - configmaps
+    verbs:
+    - get
+  - apiGroups:
     - discovery.k8s.io
     resources:
     - endpointslices
@@ -21,81 +60,15 @@ rules:
     - list
     - watch
   - apiGroups:
-    - monitoring.coreos.com
+    - networking.k8s.io
     resources:
-    - podmonitors
-    - servicemonitors
-    - scrapeconfigs
-    - probes
-    verbs:
-    - get
-    - list
-    - watch
-  - apiGroups:
-    - ""
-    resources:
-    - events
-    - namespaces
-    - namespaces/status
-    - nodes
-    - nodes/spec
-    - nodes/stats
-    - nodes/proxy
-    - nodes/metrics
-    - pods
-    - pods/status
-    - replicationcontrollers
-    - replicationcontrollers/status
-    - resourcequotas
-    - services
-    - endpoints
     - ingresses
-    - configmaps
-    verbs:
-    - get
-    - list
-    - watch
-  - apiGroups:
-    - apps
-    resources:
-    - daemonsets
-    - deployments
-    - replicasets
-    - statefulsets
-    verbs:
-    - get
-    - list
-    - watch
-  - apiGroups:
-    - extensions
-    resources:
-    - daemonsets
-    - deployments
-    - replicasets
-    verbs:
-    - get
-    - list
-    - watch
-  - apiGroups:
-    - batch
-    resources:
-    - jobs
-    - cronjobs
-    verbs:
-    - get
-    - list
-    - watch
-  - apiGroups:
-    - autoscaling
-    resources:
-    - horizontalpodautoscalers
     verbs:
     - get
     - list
     - watch
   - nonResourceURLs:
     - /metrics
-    - /metrics/cadvisor
     verbs:
     - get
 ---
@@ -264,11 +237,11 @@ spec:
             pipelines:
               - metrics/platform
           - context: metric
-            condition: 'resource.attributes["k8s.namespace.name"] == "team-a"or resource.attributes["tenant.name"] == "team-a"'
+            condition: 'resource.attributes["k8s.namespace.name"] == "team-a" or resource.attributes["tenant.name"] == "team-a"'
             pipelines:
               - metrics/team-a
           - context: metric
-            condition: 'resource.attributes["k8s.namespace.name"] == "team-b"or resource.attributes["tenant.name"] == "team-b"'
+            condition: 'resource.attributes["k8s.namespace.name"] == "team-b" or resource.attributes["tenant.name"] == "team-b"'
             pipelines:
               - metrics/team-b
 
