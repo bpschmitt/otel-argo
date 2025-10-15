@@ -138,16 +138,6 @@ spec:
       secretKeyRef:
         name: newrelic-license-key-app-team-b
         key: license
-  - name: NR_LICENSE_KEY_TEAM_C
-    valueFrom:
-      secretKeyRef:
-        name: newrelic-license-key-app-team-c
-        key: license
-  - name: NR_LICENSE_KEY_TEAM_D
-    valueFrom:
-      secretKeyRef:
-        name: newrelic-license-key-app-team-d
-        key: license
 
   # Annotations for the pods
   podAnnotations:
@@ -264,16 +254,6 @@ spec:
           - key: "collector.source"
             action: "insert"
             value: "team-b"
-      resource/team-c:
-        attributes:
-          - key: "collector.source"
-            action: "insert"
-            value: "team-c"
-      resource/team-d:
-        attributes:
-          - key: "collector.source"
-            action: "insert"
-            value: "team-d"
 
     connectors:
       routing/metrics:
@@ -291,14 +271,6 @@ spec:
             condition: 'resource.attributes["k8s.namespace.name"] == "team-b"or resource.attributes["tenant.name"] == "team-b"'
             pipelines:
               - metrics/team-b
-          - context: metric
-            condition: 'resource.attributes["k8s.namespace.name"] == "team-c"or resource.attributes["tenant.name"] == "team-c"'
-            pipelines:
-              - metrics/team-c
-          - context: metric
-            condition: 'resource.attributes["k8s.namespace.name"] == "team-d"or resource.attributes["tenant.name"] == "team-d"'
-            pipelines:
-              - metrics/team-d
 
 
     exporters:
@@ -315,14 +287,6 @@ spec:
         endpoint: https://otlp.nr-data.net
         headers:
           api-key: ${NR_LICENSE_KEY_TEAM_B}
-      otlphttp/team-c:
-        endpoint: https://otlp.nr-data.net
-        headers:
-          api-key: ${NR_LICENSE_KEY_TEAM_C}
-      otlphttp/team-d:
-        endpoint: https://otlp.nr-data.net
-        headers:
-          api-key: ${NR_LICENSE_KEY_TEAM_D}
 
     service:
       pipelines:
@@ -347,12 +311,4 @@ spec:
         metrics/team-b:
           receivers: [routing/metrics]
           processors: [memory_limiter, resource, resource/team-b, k8sattributes, batch]
-          exporters: [debug]
-        metrics/team-c:
-          receivers: [routing/metrics]
-          processors: [memory_limiter, resource, resource/team-c, k8sattributes, batch]
-          exporters: [debug]
-        metrics/team-d:
-          receivers: [routing/metrics]
-          processors: [memory_limiter, resource, resource/team-d, k8sattributes, batch]
           exporters: [debug]
