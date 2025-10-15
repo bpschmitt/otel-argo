@@ -201,7 +201,7 @@ resources:
     cpu: 100m
     memory: 256Mi
   limits:
-    cpu: null
+    cpu: 200m
     memory: 512Mi
 
 # Number of replicas
