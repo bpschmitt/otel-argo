@@ -17,6 +17,8 @@ rules:
     resources:
     - podmonitors
     - servicemonitors
+    - scrapeconfigs
+    - probes
     verbs:
     - get
     - list
