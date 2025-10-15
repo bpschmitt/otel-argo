@@ -95,6 +95,7 @@ metadata:
 spec:
   mode: statefulset
   replicas: 2
+  serviceAccount: otel-target-allocator-statefulset
   env:
   - name: NR_LICENSE_KEY_PLATFORM
     valueFrom:
