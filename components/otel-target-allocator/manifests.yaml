@@ -13,6 +13,15 @@ metadata:
   name: opentelemetry-targetallocator-generator-sts-targetallocator
 rules:
   - apiGroups:
+    - monitoring.coreos.com
+    resources:
+    - podmonitors
+    - servicemonitors
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
     - ""
     resources:
     - events
