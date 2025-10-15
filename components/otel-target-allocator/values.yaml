@@ -64,7 +64,9 @@ global:
         namespaces:
           - team-d
 
-targetAllocatorName: ""
+targetAllocatorName: "otel-target-allocator-statefulset"
+
+fullnameOverride: ""
 
 # Image
 image:
