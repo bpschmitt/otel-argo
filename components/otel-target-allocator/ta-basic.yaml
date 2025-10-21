@@ -6,7 +6,6 @@ metadata:
     argocd.argoproj.io/sync-wave: "3"
 spec:
   mode: statefulset
-  allocationStrategy: consistent-hashing
   replicas: 2
   env:
     - name: NR_LICENSE_KEY
@@ -26,6 +25,7 @@ spec:
     #       key: license
   targetAllocator:
     enabled: true
+    allocationStrategy: consistent-hashing
     serviceAccount: opentelemetry-target-allocator-serviceaccount
     prometheusCR:
       enabled: true
