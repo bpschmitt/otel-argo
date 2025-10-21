@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    serviceMonitorSelector: redis
+  name: redis-service-monitor
+  namespace: team-b
+spec:
+  endpoints:
+  - interval: 1m
+    targetPort: 9121
+    path: /metrics
+  namespaceSelector:
+    matchNames:
+    - team-b
+  selector:
+    matchLabels:
+      target-allocation: "true"

@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    serviceMonitorSelector: rabbitmq
+  name: rabbitmq-service-monitor-ignore
+spec:
+  endpoints:
+  - interval: 1m
+    targetPort: 15692
+    path: /metrics
+    metricRelabelings:
+    - sourceLabels: [__name__]
+      action: keep
+      regex: rabbitmq_queue_.*
+  jobLabel: rabbitmq
+  namespaceSelector:
+    matchNames:
+    - team-a
+  selector:
+    matchLabels:
+      target-allocation: "true"
