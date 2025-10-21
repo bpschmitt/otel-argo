@@ -750,7 +750,7 @@ spec:
             - hostmetrics
             - kubeletstats
             - prometheus
-          processors:
+          processors: []
 
           exporters:
             - routing/nr_metrics_pipelines

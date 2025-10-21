@@ -762,7 +762,7 @@ spec:
           receivers:
             - prometheus/ksm
             - prometheus/controlplane
-          processors:
+          processors: []
 
             - transform/promote_job_label
           exporters:
