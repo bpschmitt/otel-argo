@@ -8,7 +8,7 @@ metadata:
 spec:
   destination:
     namespace: otel-system
-    name: otel-sandbox
+    server: https://kubernetes.default.svc
   project: default
   source:
     path: components/otel-deployment
