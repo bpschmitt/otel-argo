@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: otel-root
+  name: kube-state-metrics
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -11,7 +11,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: components/otel-root/children
+    path: components/ksm
     repoURL: https://github.com/bpschmitt/otel-argo
     targetRevision: app-of-apps
   syncPolicy:
