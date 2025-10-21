@@ -18,7 +18,7 @@ spec:
     matchLabels:
       app.kubernetes.io/name: kube-state-metrics
       app.kubernetes.io/instance: nr-k8s-otel-collector
-  replicas: 1
+  replicas: 2
   revisionHistoryLimit: 10
   serviceName: nr-k8s-otel-collector-kube-state-metrics
   volumeClaimTemplates: []
