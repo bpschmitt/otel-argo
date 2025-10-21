@@ -57,7 +57,7 @@ spec:
         protocols:
           http:
             endpoint: ${env:MY_POD_IP}:4318
-      k8s_events:
+      k8s_events: {}
       prometheus/ksm:
         config:
           scrape_configs:
