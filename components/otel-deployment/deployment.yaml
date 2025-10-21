@@ -2,6 +2,8 @@ apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
 metadata:
   name: nr-k8s-otel-collector-deployment
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   mode: deployment
   replicas: 1

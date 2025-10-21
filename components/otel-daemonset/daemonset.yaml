@@ -2,6 +2,8 @@ apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
 metadata:
   name: nr-k8s-otel-collector-daemonset
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   mode: daemonset
   hostNetwork: true
