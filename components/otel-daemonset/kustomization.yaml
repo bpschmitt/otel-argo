@@ -1,0 +1,18 @@
+# Kustomize Base for OpenTelemetry Operator.
+# This file is pure Kustomize and relies on pre-rendered YAML manifests.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# The base only includes the pre-rendered Helm output (manifests.yaml).
+resources:
+- clusterrole.yaml
+- clusterrolebinding.yaml
+- daemonset.yaml
+- serviceaccount.yaml
+
+# Set common labels to be inherited by all resources in this base
+# commonLabels:
+#   app.kubernetes.io/name: otel-agent
+#   app.kubernetes.io/part-of: opentelemetry
+#   kustomize.component: otel-agent-base

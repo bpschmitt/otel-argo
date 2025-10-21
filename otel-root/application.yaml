@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: otel-root
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: otel-system
+    name: otel-sandbox
+  project: default
+  source:
+    path: components
+    repoURL: https://github.com/bpschmitt/otel-argo
+    targetRevision: app-of-apps
