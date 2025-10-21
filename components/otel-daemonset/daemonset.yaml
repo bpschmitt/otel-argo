@@ -835,7 +835,7 @@ spec:
         logs/ingress:
           receivers:
             - filelog
-          processors:
+          processors: []
 
           exporters:
             - routing/nr_logs_pipelines
