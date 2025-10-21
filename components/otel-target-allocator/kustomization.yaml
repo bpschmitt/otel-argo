@@ -6,7 +6,11 @@ kind: Kustomization
 
 # The base only includes the pre-rendered Helm output (manifests.yaml).
 resources:
-- manifests.yaml
+- clusterrole.yaml
+- clusterrolebinding.yaml
+- service.yaml
+- serviceaccount.yaml
+- ta-basic.yaml
 
 # Set common labels to be inherited by all resources in this base
 # commonLabels:

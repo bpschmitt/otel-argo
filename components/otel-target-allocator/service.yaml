@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: otel-system
+  name: opentelemetry-target-allocator-service
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  selector:
+    app.kubernetes.io/name: opentelemetry-collector-targetallocator-targetallocator
+    app.kubernetes.io/instance: otel-system.opentelemetry-collector-targetallocator
+  ports:
+    - name: http-port
+      protocol: TCP
+      port: 80
+      targetPort: 8080
