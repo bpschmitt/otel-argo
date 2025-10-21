@@ -833,7 +833,7 @@ spec:
         logs/ingress:
           receivers:
             - k8s_events
-          processors:
+          processors: []
 
           exporters:
             - routing/nr_logs_pipelines
