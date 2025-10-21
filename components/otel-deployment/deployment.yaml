@@ -50,6 +50,7 @@ spec:
     - name: http
       port: 4318
       protocol: TCP
+      targetPort: 4318
   config:
     receivers:
 
