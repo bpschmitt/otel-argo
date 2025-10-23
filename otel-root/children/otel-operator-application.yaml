@@ -23,6 +23,7 @@ spec:
     namespace: otel-system
   syncPolicy:
     automated:
+      enabled : true
       prune: true
       selfHeal: true
     syncOptions:

@@ -16,6 +16,7 @@ spec:
     targetRevision: app-of-apps
   syncPolicy:
     automated:
+      enabled : true
       prune: true
       selfHeal: true
     syncOptions:
