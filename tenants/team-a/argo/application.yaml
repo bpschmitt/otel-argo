@@ -9,13 +9,14 @@ spec:
   destination:
     namespace: team-a
     server: https://kubernetes.default.svc
-  project: default
+  project: observability
   source:
     path: tenants/team-a
     repoURL: https://github.com/bpschmitt/otel-argo
     targetRevision: app-of-apps
   syncPolicy:
     automated:
+      enabled : true
       prune: true
       selfHeal: true
     syncOptions:
