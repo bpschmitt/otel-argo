@@ -1,8 +1,6 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  labels:
-    serviceMonitorSelector: rabbitmq
   name: rabbitmq-service-monitor-ignore
 spec:
   endpoints:
