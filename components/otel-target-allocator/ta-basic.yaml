@@ -29,12 +29,14 @@ spec:
     serviceAccount: opentelemetry-target-allocator-serviceaccount
     prometheusCR:
       enabled: true
-      allowNamespaces: []  # restricts the TA to watching only the specified namespaces
-      # - team-a
+      allowNamespaces: []
+      denyNamespaces: []
       podMonitorSelector: {}
-      serviceMonitorSelector: {} # defined ServiceMonitors must have this label.
-        # matchLabels:
-        #   team: team-a
+      serviceMonitorSelector: # defined ServiceMonitors must have this label.
+        matchExpressions:
+          - key: team
+            operator: In
+            values: [team-a]
   config:
     receivers:
       prometheus:
